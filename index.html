@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Gráficos de Pizza</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Gráficos de Pizza</h1>
+        <form id="dataForm">
+            <input type="text" id="labels" placeholder="Rótulos (separados por vírgula)" required>
+            <input type="text" id="values" placeholder="Valores (separados por vírgula)" required>
+            <button type="submit">Gerar Gráfico</button>
+        </form>
+        <canvas id="pieChart" width="400" height="400"></canvas>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
