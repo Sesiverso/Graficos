@@ -1,5 +1,7 @@
 let pieChart;
+let pdf; // Variável para armazenar o PDF gerado
 
+// Função para gerar o gráfico
 function generateChart(labels, values) {
     const ctx = document.getElementById('pieChart').getContext('2d');
 
@@ -46,8 +48,29 @@ function generateChart(labels, values) {
             }
         }
     });
+
+    // Após gerar o gráfico, cria automaticamente o PDF
+    createPDF();
 }
 
+// Função para criar o PDF
+function createPDF() {
+    const canvas = document.getElementById('pieChart');
+    pdf = new jspdf.jsPDF(); // Inicializa o PDF
+
+    // Usa html2canvas para capturar a imagem do canvas
+    html2canvas(canvas).then(function(canvas) {
+        const imgData = canvas.toDataURL('image/png');
+        
+        // Adiciona a imagem ao PDF
+        pdf.addImage(imgData, 'PNG', 15, 40, 180, 160);
+        
+        // Habilita o botão de download
+        document.getElementById('downloadBtn').disabled = false;
+    });
+}
+
+// Evento de gerar gráfico
 document.getElementById('dataForm').addEventListener('submit', function(event) {
     event.preventDefault();
     
@@ -57,13 +80,15 @@ document.getElementById('dataForm').addEventListener('submit', function(event) {
     generateChart(labels, values);
 });
 
+// Função de download do PDF
 document.getElementById('downloadBtn').addEventListener('click', function() {
-    const pdf = new jsPDF('p', 'pt', 'a4');
-    const canvas = document.getElementById('pieChart');
+    if (pdf) {
+        document.getElementById('status').textContent = "Baixando..."; // Exibe mensagem de status
+        pdf.save('grafico_de_pizza.pdf'); // Realiza o download do PDF
 
-    html2canvas(canvas).then((canvas) => {
-        const imgData = canvas.toDataURL('image/png');
-        pdf.addImage(imgData, 'PNG', 15, 15, 570, 400);
-        pdf.save('grafico_de_pizza.pdf');
-    });
+        // Após o download, limpa a mensagem de status
+        setTimeout(() => {
+            document.getElementById('status').textContent = "";
+        }, 2000);
+    }
 });
