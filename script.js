@@ -49,8 +49,8 @@ function generateChart(labels, values) {
         }
     });
 
-    // Após gerar o gráfico, cria automaticamente o PDF
-    createPDF();
+    // Aguarda 2 segundos antes de criar o PDF com a imagem do gráfico
+    setTimeout(createPDF, 2000);
 }
 
 // Função para criar o PDF
@@ -62,7 +62,7 @@ function createPDF() {
     html2canvas(canvas).then(function(canvas) {
         const imgData = canvas.toDataURL('image/png');
         
-        // Adiciona a imagem ao PDF
+        // Adiciona a imagem ao PDF (ajustando o tamanho para uma boa resolução)
         pdf.addImage(imgData, 'PNG', 15, 40, 180, 160);
         
         // Habilita o botão de download
