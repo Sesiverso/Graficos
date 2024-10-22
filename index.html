@@ -16,9 +16,10 @@
             <input type="text" id="labels" placeholder="Rótulos (separados por vírgula)" required>
             <input type="text" id="values" placeholder="Valores (separados por vírgula)" required>
             <button type="submit">Gerar Gráfico</button>
-            <button type="button" id="downloadBtn">Baixar Gráfico</button>
+            <button type="button" id="downloadBtn" disabled>Baixar Gráfico</button>
         </form>
         <canvas id="pieChart" width="400" height="400"></canvas>
+        <p id="status"></p> <!-- Texto de status (ex: "Baixando...") -->
     </div>
     <script src="script.js"></script>
 </body>
