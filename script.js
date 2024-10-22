@@ -58,8 +58,12 @@ document.getElementById('dataForm').addEventListener('submit', function(event) {
 });
 
 document.getElementById('downloadBtn').addEventListener('click', function() {
-    const link = document.createElement('a');
-    link.href = document.getElementById('pieChart').toDataURL('image/png');
-    link.download = 'grafico_de_pizza.png';
-    link.click();
+    const pdf = new jsPDF('p', 'pt', 'a4');
+    const canvas = document.getElementById('pieChart');
+
+    html2canvas(canvas).then((canvas) => {
+        const imgData = canvas.toDataURL('image/png');
+        pdf.addImage(imgData, 'PNG', 15, 15, 570, 400);
+        pdf.save('grafico_de_pizza.pdf');
+    });
 });
