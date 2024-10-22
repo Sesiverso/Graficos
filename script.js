@@ -1,11 +1,14 @@
-document.getElementById('dataForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    const labels = document.getElementById('labels').value.split(',').map(label => label.trim());
-    const values = document.getElementById('values').value.split(',').map(value => parseFloat(value.trim()));
-    
+let pieChart;
+
+function generateChart(labels, values) {
     const ctx = document.getElementById('pieChart').getContext('2d');
-    const pieChart = new Chart(ctx, {
+
+    // Se o gráfico já existir, destrua-o antes de criar um novo
+    if (pieChart) {
+        pieChart.destroy();
+    }
+
+    pieChart = new Chart(ctx, {
         type: 'pie',
         data: {
             labels: labels,
@@ -43,4 +46,20 @@ document.getElementById('dataForm').addEventListener('submit', function(event) {
             }
         }
     });
+}
+
+document.getElementById('dataForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    
+    const labels = document.getElementById('labels').value.split(',').map(label => label.trim());
+    const values = document.getElementById('values').value.split(',').map(value => parseFloat(value.trim()));
+    
+    generateChart(labels, values);
+});
+
+document.getElementById('downloadBtn').addEventListener('click', function() {
+    const link = document.createElement('a');
+    link.href = document.getElementById('pieChart').toDataURL('image/png');
+    link.download = 'grafico_de_pizza.png';
+    link.click();
 });
