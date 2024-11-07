@@ -15,6 +15,7 @@ function generateChart(labels, values, chartType) {
         data: {
             labels: labels,
             datasets: [{
+                label: 'Dados do Gráfico',
                 data: values,
                 backgroundColor: [
                     'rgba(255, 99, 132, 0.2)',
@@ -39,16 +40,23 @@ function generateChart(labels, values, chartType) {
             responsive: true,
             plugins: {
                 legend: {
+                    display: true,
                     position: 'top',
                 },
                 title: {
                     display: true,
                     text: `Gráfico de ${chartType === 'pie' ? 'Pizza' : 'Colunas'}`
                 }
-            }
+            },
+            scales: chartType === 'bar' ? {
+                y: {
+                    beginAtZero: true
+                }
+            } : {}
         }
     });
 
+    // Aguarda 2 segundos antes de criar o PDF com a imagem do gráfico
     setTimeout(createPDF, 2000);
 }
 
@@ -67,9 +75,10 @@ function createPDF() {
 // Evento de gerar gráfico
 document.getElementById('dataForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    const chartType = document.getElementById('chartType').value;
+    
     const labels = document.getElementById('labels').value.split(',').map(label => label.trim());
     const values = document.getElementById('values').value.split(',').map(value => parseFloat(value.trim()));
+    const chartType = document.getElementById('chartType').value;
 
     generateChart(labels, values, chartType);
 });
