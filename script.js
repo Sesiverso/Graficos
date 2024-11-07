@@ -41,16 +41,38 @@ function generateChart(labels, values, chartType) {
             plugins: {
                 legend: {
                     display: true,
-                    position: 'top',
+                    position: 'top', // Posição da legenda
+                    labels: {
+                        font: {
+                            size: 14
+                        }
+                    }
                 },
                 title: {
                     display: true,
                     text: `Gráfico de ${chartType === 'pie' ? 'Pizza' : 'Colunas'}`
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return `${context.label}: ${context.raw}`;
+                        }
+                    }
                 }
             },
             scales: chartType === 'bar' ? {
+                x: {
+                    title: {
+                        display: true,
+                        text: 'Rótulos'
+                    }
+                },
                 y: {
-                    beginAtZero: true
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Valores'
+                    }
                 }
             } : {}
         }
@@ -60,36 +82,37 @@ function generateChart(labels, values, chartType) {
     setTimeout(createPDF, 2000);
 }
 
-// Função para criar o PDF
+// Função para criar e baixar o PDF com o gráfico
 function createPDF() {
     const canvas = document.getElementById('chartCanvas');
-    pdf = new jspdf.jsPDF();
+    const imageData = canvas.toDataURL('image/png');
 
-    html2canvas(canvas).then(function(canvas) {
-        const imgData = canvas.toDataURL('image/png');
-        pdf.addImage(imgData, 'PNG', 15, 40, 180, 160);
-        document.getElementById('downloadBtn').disabled = false;
-    });
+    pdf = new jsPDF('landscape');
+    pdf.addImage(imageData, 'PNG', 10, 10, 280, 150);
 }
 
-// Evento de gerar gráfico
-document.getElementById('dataForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    
-    const labels = document.getElementById('labels').value.split(',').map(label => label.trim());
-    const values = document.getElementById('values').value.split(',').map(value => parseFloat(value.trim()));
+// Função para baixar o PDF com o gráfico
+function downloadPDF() {
+    if (pdf) {
+        pdf.save('grafico.pdf');
+    } else {
+        alert('Por favor, gere um gráfico antes de baixar o PDF.');
+    }
+}
+
+// Função de controle para gerar o gráfico quando o botão é clicado
+document.getElementById('generateButton').addEventListener('click', function () {
+    const labelsInput = document.getElementById('labelsInput').value.split(',');
+    const valuesInput = document.getElementById('valuesInput').value.split(',').map(Number);
     const chartType = document.getElementById('chartType').value;
 
-    generateChart(labels, values, chartType);
+    if (labelsInput.length !== valuesInput.length) {
+        alert('Certifique-se de que a quantidade de rótulos e valores seja igual.');
+        return;
+    }
+
+    generateChart(labelsInput, valuesInput, chartType);
 });
 
-// Função de download do PDF
-document.getElementById('downloadBtn').addEventListener('click', function() {
-    if (pdf) {
-        document.getElementById('status').textContent = "Baixando...";
-        pdf.save('grafico.pdf');
-        setTimeout(() => {
-            document.getElementById('status').textContent = "";
-        }, 2000);
-    }
-});
+// Função de controle para baixar o gráfico em PDF quando o botão é clicado
+document.getElementById('downloadButton').addEventListener('click', downloadPDF);
