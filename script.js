@@ -14,13 +14,13 @@ function generateChart(labels, values, chartType) {
         type: chartType,
         data: {
             labels: labels,
-            datasets: [{
-                label: 'Dados do Gráfico',
-                data: values,
-                backgroundColor: labels.map((_, index) => `rgba(${255 - (index * 30)}, ${99 + (index * 30)}, ${132 + (index * 15)}, 0.2)`),
-                borderColor: labels.map((_, index) => `rgba(${255 - (index * 30)}, ${99 + (index * 30)}, ${132 + (index * 15)}, 1)`),
+            datasets: labels.map((label, index) => ({
+                label: label,
+                data: [values[index]], // Apenas o valor correspondente ao rótulo
+                backgroundColor: `rgba(${255 - (index * 30)}, ${99 + (index * 30)}, ${132 + (index * 15)}, 0.2)`,
+                borderColor: `rgba(${255 - (index * 30)}, ${99 + (index * 30)}, ${132 + (index * 15)}, 1)`,
                 borderWidth: 1
-            }]
+            }))
         },
         options: {
             responsive: true,
@@ -29,17 +29,6 @@ function generateChart(labels, values, chartType) {
                     display: true,
                     position: 'top', // Posição da legenda
                     labels: {
-                        generateLabels: function (chart) {
-                            const datasets = chart.data.datasets[0];
-                            return chart.data.labels.map((label, index) => ({
-                                text: label,
-                                fillStyle: datasets.backgroundColor[index],
-                                strokeStyle: datasets.borderColor[index],
-                                lineWidth: 1,
-                                hidden: false,
-                                index: index
-                            }));
-                        },
                         font: {
                             size: 14
                         }
@@ -52,7 +41,7 @@ function generateChart(labels, values, chartType) {
                 tooltip: {
                     callbacks: {
                         label: function(context) {
-                            return `${context.label}: ${context.raw}`;
+                            return `${context.dataset.label}: ${context.raw}`;
                         }
                     }
                 }
