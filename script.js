@@ -5,6 +5,12 @@ let pdf;
 function generateChart(labels, values, chartType) {
     const ctx = document.getElementById('chartCanvas').getContext('2d');
 
+    // Atualiza as legendas com os valores qualitativos inseridos pelo usuário
+    if (labels.length > 0) {
+        document.getElementById('textoVermelho').textContent = labels[0]; // Primeiro rótulo para a cor vermelha
+        document.getElementById('textoAzul').textContent = labels[1] || 'N/A'; // Segundo rótulo para a cor azul ou 'N/A' se não houver
+    }
+
     // Se o gráfico já existir, destrua-o antes de criar um novo
     if (chartInstance) {
         chartInstance.destroy();
@@ -14,91 +20,67 @@ function generateChart(labels, values, chartType) {
         type: chartType,
         data: {
             labels: labels,
-            datasets: labels.map((label, index) => ({
-                label: label,
-                data: [values[index]], // Apenas o valor correspondente ao rótulo
-                backgroundColor: `rgba(${255 - (index * 30)}, ${99 + (index * 30)}, ${132 + (index * 15)}, 0.2)`,
-                borderColor: `rgba(${255 - (index * 30)}, ${99 + (index * 30)}, ${132 + (index * 15)}, 1)`,
+            datasets: [{
+                data: values,
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.2)', // Cor vermelha
+                    'rgba(54, 162, 235, 0.2)', // Cor azul
+                    // Outras cores, se necessário
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    // Outras bordas, se necessário
+                ],
                 borderWidth: 1
-            }))
+            }]
         },
         options: {
             responsive: true,
             plugins: {
                 legend: {
-                    display: true,
-                    position: 'top', // Posição da legenda
-                    labels: {
-                        font: {
-                            size: 14
-                        }
-                    }
+                    position: 'top',
                 },
                 title: {
                     display: true,
                     text: `Gráfico de ${chartType === 'pie' ? 'Pizza' : 'Colunas'}`
-                },
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            return `${context.dataset.label}: ${context.raw}`;
-                        }
-                    }
                 }
-            },
-            scales: chartType === 'bar' ? {
-                x: {
-                    title: {
-                        display: true,
-                        text: 'Rótulos'
-                    }
-                },
-                y: {
-                    beginAtZero: true,
-                    title: {
-                        display: true,
-                        text: 'Valores'
-                    }
-                }
-            } : {}
+            }
         }
     });
 
-    // Aguarda 2 segundos antes de criar o PDF com a imagem do gráfico
     setTimeout(createPDF, 2000);
 }
 
-// Função para criar e baixar o PDF com o gráfico
+// Função para criar o PDF
 function createPDF() {
     const canvas = document.getElementById('chartCanvas');
-    const imageData = canvas.toDataURL('image/png');
+    pdf = new jspdf.jsPDF();
 
-    pdf = new jsPDF('landscape');
-    pdf.addImage(imageData, 'PNG', 10, 10, 280, 150);
+    html2canvas(canvas).then(function(canvas) {
+        const imgData = canvas.toDataURL('image/png');
+        pdf.addImage(imgData, 'PNG', 15, 40, 180, 160);
+        document.getElementById('downloadBtn').disabled = false;
+    });
 }
 
-// Função para baixar o PDF com o gráfico
-function downloadPDF() {
-    if (pdf) {
-        pdf.save('grafico.pdf');
-    } else {
-        alert('Por favor, gere um gráfico antes de baixar o PDF.');
-    }
-}
-
-// Função de controle para gerar o gráfico quando o botão é clicado
-document.getElementById('generateButton').addEventListener('click', function () {
-    const labelsInput = document.getElementById('labelsInput').value.split(',');
-    const valuesInput = document.getElementById('valuesInput').value.split(',').map(Number);
+// Evento de gerar gráfico
+document.getElementById('dataForm').addEventListener('submit', function(event) {
+    event.preventDefault();
     const chartType = document.getElementById('chartType').value;
+    const labels = document.getElementById('labels').value.split(',').map(label => label.trim());
+    const values = document.getElementById('values').value.split(',').map(value => parseFloat(value.trim()));
 
-    if (labelsInput.length !== valuesInput.length) {
-        alert('Certifique-se de que a quantidade de rótulos e valores seja igual.');
-        return;
-    }
-
-    generateChart(labelsInput, valuesInput, chartType);
+    generateChart(labels, values, chartType);
 });
 
-// Função de controle para baixar o gráfico em PDF quando o botão é clicado
-document.getElementById('downloadButton').addEventListener('click', downloadPDF);
+// Função de download do PDF
+document.getElementById('downloadBtn').addEventListener('click', function() {
+    if (pdf) {
+        document.getElementById('status').textContent = "Baixando...";
+        pdf.save('grafico.pdf');
+        setTimeout(() => {
+            document.getElementById('status').textContent = "";
+        }, 2000);
+    }
+});
