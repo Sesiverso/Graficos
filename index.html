@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Gráficos</title>
+    <title>Gerador de Gráficos de Colunas/Pizza</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
@@ -11,19 +11,20 @@
 </head>
 <body>
     <div class="container">
-        <h1>Gerador de Gráficos</h1>
+        <h1>Gerador de Gráficos de Colunas/Pizza</h1>
         <form id="dataForm">
+            <label for="chartType">Tipo de Gráfico:</label>
+            <select id="chartType" required>
+                <option value="bar">Colunas</option>
+                <option value="pie">Pizza</option>
+            </select>
             <input type="text" id="labels" placeholder="Rótulos (separados por vírgula)" required>
             <input type="text" id="values" placeholder="Valores (separados por vírgula)" required>
-            <select id="chartType">
-                <option value="pie">Pizza</option>
-                <option value="bar">Coluna</option>
-            </select>
             <button type="submit">Gerar Gráfico</button>
             <button type="button" id="downloadBtn" disabled>Baixar Gráfico</button>
         </form>
         <canvas id="chartCanvas" width="400" height="400"></canvas>
-        <p id="status"></p> <!-- Texto de status -->
+        <p id="status"></p>
     </div>
     <script src="script.js"></script>
 </body>
