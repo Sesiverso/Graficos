@@ -1,17 +1,17 @@
-let pieChart;
-let pdf; // Variável para armazenar o PDF gerado
+let chartInstance;
+let pdf;
 
 // Função para gerar o gráfico
-function generateChart(labels, values) {
-    const ctx = document.getElementById('pieChart').getContext('2d');
+function generateChart(labels, values, chartType) {
+    const ctx = document.getElementById('chartCanvas').getContext('2d');
 
     // Se o gráfico já existir, destrua-o antes de criar um novo
-    if (pieChart) {
-        pieChart.destroy();
+    if (chartInstance) {
+        chartInstance.destroy();
     }
 
-    pieChart = new Chart(ctx, {
-        type: 'pie',
+    chartInstance = new Chart(ctx, {
+        type: chartType,
         data: {
             labels: labels,
             datasets: [{
@@ -43,29 +43,23 @@ function generateChart(labels, values) {
                 },
                 title: {
                     display: true,
-                    text: 'Gráfico de Pizza'
+                    text: `Gráfico de ${chartType === 'pie' ? 'Pizza' : 'Colunas'}`
                 }
             }
         }
     });
 
-    // Aguarda 2 segundos antes de criar o PDF com a imagem do gráfico
     setTimeout(createPDF, 2000);
 }
 
 // Função para criar o PDF
 function createPDF() {
-    const canvas = document.getElementById('pieChart');
-    pdf = new jspdf.jsPDF(); // Inicializa o PDF
+    const canvas = document.getElementById('chartCanvas');
+    pdf = new jspdf.jsPDF();
 
-    // Usa html2canvas para capturar a imagem do canvas
     html2canvas(canvas).then(function(canvas) {
         const imgData = canvas.toDataURL('image/png');
-        
-        // Adiciona a imagem ao PDF (ajustando o tamanho para uma boa resolução)
         pdf.addImage(imgData, 'PNG', 15, 40, 180, 160);
-        
-        // Habilita o botão de download
         document.getElementById('downloadBtn').disabled = false;
     });
 }
@@ -73,20 +67,18 @@ function createPDF() {
 // Evento de gerar gráfico
 document.getElementById('dataForm').addEventListener('submit', function(event) {
     event.preventDefault();
-    
+    const chartType = document.getElementById('chartType').value;
     const labels = document.getElementById('labels').value.split(',').map(label => label.trim());
     const values = document.getElementById('values').value.split(',').map(value => parseFloat(value.trim()));
-    
-    generateChart(labels, values);
+
+    generateChart(labels, values, chartType);
 });
 
 // Função de download do PDF
 document.getElementById('downloadBtn').addEventListener('click', function() {
     if (pdf) {
-        document.getElementById('status').textContent = "Baixando..."; // Exibe mensagem de status
-        pdf.save('grafico_de_pizza.pdf'); // Realiza o download do PDF
-
-        // Após o download, limpa a mensagem de status
+        document.getElementById('status').textContent = "Baixando...";
+        pdf.save('grafico.pdf');
         setTimeout(() => {
             document.getElementById('status').textContent = "";
         }, 2000);
