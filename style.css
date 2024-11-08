@@ -43,8 +43,3 @@ button {
 button:hover {
     background-color: #218838;
 }
-
-#status {
-    text-align: center;
-    margin-top: 10px;
-}
