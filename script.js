@@ -5,12 +5,6 @@ let pdf;
 function generateChart(labels, values, chartType) {
     const ctx = document.getElementById('chartCanvas').getContext('2d');
 
-    // Atualiza as legendas com os valores qualitativos inseridos pelo usuário
-    if (labels.length > 0) {
-        document.getElementById('textoVermelho').textContent = labels[0]; // Primeiro rótulo para a cor vermelha
-        document.getElementById('textoAzul').textContent = labels[1] || 'N/A'; // Segundo rótulo para a cor azul ou 'N/A' se não houver
-    }
-
     // Se o gráfico já existir, destrua-o antes de criar um novo
     if (chartInstance) {
         chartInstance.destroy();
@@ -23,14 +17,20 @@ function generateChart(labels, values, chartType) {
             datasets: [{
                 data: values,
                 backgroundColor: [
-                    'rgba(255, 99, 132, 0.2)', // Cor vermelha
-                    'rgba(54, 162, 235, 0.2)', // Cor azul
-                    // Outras cores, se necessário
+                    'rgba(255, 99, 132, 0.2)',
+                    'rgba(54, 162, 235, 0.2)',
+                    'rgba(255, 206, 86, 0.2)',
+                    'rgba(75, 192, 192, 0.2)',
+                    'rgba(153, 102, 255, 0.2)',
+                    'rgba(255, 159, 64, 0.2)'
                 ],
                 borderColor: [
                     'rgba(255, 99, 132, 1)',
                     'rgba(54, 162, 235, 1)',
-                    // Outras bordas, se necessário
+                    'rgba(255, 206, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                    'rgba(255, 159, 64, 1)'
                 ],
                 borderWidth: 1
             }]
